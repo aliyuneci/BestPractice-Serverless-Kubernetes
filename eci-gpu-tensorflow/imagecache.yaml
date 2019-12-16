@@ -1,0 +1,7 @@
+apiVersion: eci.alibabacloud.com/v1
+kind: ImageCache
+metadata:
+name: tensorflow
+spec:
+images:
+- registry-vpc.cn-zhangjiakou.aliyuncs.com/eci/tensorflow:1.0 # 训练任务的镜像，建议放到阿里云vpc私网仓库

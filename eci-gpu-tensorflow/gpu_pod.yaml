@@ -1,0 +1,27 @@
+apiVersion: v1
+kind: Pod
+metadata:
+name: tensorflow
+annotations:
+  k8s.aliyun.com/eci-gpu-type: "P4"  # GPU规格，或者你可以指定指定和ECS一样的instanceType创建 如：k8s.aliyun.com/eci-instance-type: "ecs.gn5i-c2g1.large"
+  k8s.aliyun.com/eci-image-cache: "true"  # 开启镜像缓存自动匹配
+spec:
+containers:
+- image: registry-vpc.cn-zhangjiakou.aliyuncs.com/eci/tensorflow:1.0 # 训练任务的镜像
+  name: tensorflow
+  command:
+  - "sh"
+  - "-c"
+  - "python models/tutorials/image/imagenet/classify_image.py" # 触发训练任务的脚本
+  resources:
+    limits:
+      nvidia.com/gpu: "1"  # 容器所需的GPU个数
+  volumeMounts:
+  - name: nfs-pv
+    mountPath: /tmp/imagenet
+volumes:
+- name: nfs-pv  # 训练结果持久化到NAS文件存储
+  nfs:
+    path: /share
+    server: 0912430d-1nsl.cn-zhangjiakou.extreme.nas.aliyuncs.com
+restartPolicy: OnFailure
