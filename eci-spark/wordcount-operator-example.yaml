@@ -1,0 +1,41 @@
+apiVersion: "sparkoperator.k8s.io/v1beta2"
+kind: SparkApplication
+metadata:
+  name: wordcount
+  namespace: default
+spec:
+  type: Java
+  mode: cluster
+  image: "registry.cn-beijing.aliyuncs.com/liumi/spark:2.4.4-example"
+  imagePullPolicy: IfNotPresent
+  mainClass: com.aliyun.liumi.spark.example.WordCount
+  mainApplicationFile: "local:///opt/spark/jars/SparkExampleJava-1.0-SNAPSHOT.jar"
+  sparkVersion: "2.4.4"
+  restartPolicy:
+    type: OnFailure
+    onFailureRetries: 2
+    onFailureRetryInterval: 5
+    onSubmissionFailureRetries: 2
+    onSubmissionFailureRetryInterval: 10
+  timeToLiveSeconds: 36000
+  sparkConf:
+    "spark.kubernetes.allocation.batch.size": "10"
+  driver:
+    cores: 2
+    memory: "4096m"
+    labels:
+      version: 2.4.4
+      spark-app: spark-wordcount
+      role: driver
+    annotations:
+      k8s.aliyun.com/eci-image-cache: "true"
+    serviceAccount: spark
+  executor:
+    cores: 1
+    instances: 100
+    memory: "1024m"
+    labels:
+      version: 2.4.4
+      role: executor
+    annotations:
+      k8s.aliyun.com/eci-image-cache: "true"
