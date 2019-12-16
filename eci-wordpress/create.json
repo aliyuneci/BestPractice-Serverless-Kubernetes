@@ -1,0 +1,6 @@
+{
+  "cluster_type": "Ask",
+  "name": "wordpress-demo",
+  "nat_gateway": true,
+  "private_zone": true
+}
