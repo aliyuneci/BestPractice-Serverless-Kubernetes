@@ -1,4 +1,4 @@
-##背景
+## 背景
 
 自2003年Google的三大核心技术GFS(03)、MapReduce(04)、和BigTable(06)的论文陆续发表至今，以Hadoop为代表的大数据处理框架，开始登上历史的舞台，迎来了一个黄金时代。Apache Hadoop是其中最为成功的开源项目，让企业级的大数据处理能力变得唾手可得。围绕Hadoop的学术研究和工业界的探索在过去的十多年里一直保持着火热。
 
@@ -16,7 +16,7 @@ ASF (Apache Software Foundation) 和CNCF（Cloud Native Computing Foundation）�
 
 
 
-##从Hadoop说起
+## 从Hadoop说起
 
 Hadoop主要包含以下两个部分：Hadoop Distributed File System (HDFS) 和一个分布式计算引擎，该引擎就是Google的 MapReduce思想的一个实现 。Hadoop一度成为了大规模分布式数据存储和处理的标椎。
 
