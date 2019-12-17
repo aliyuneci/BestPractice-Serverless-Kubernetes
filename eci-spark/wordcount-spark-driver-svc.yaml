@@ -1,0 +1,156 @@
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: spark-serverless
+  namespace: default
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: spark-serverless-role
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: edit
+subjects:
+- kind: ServiceAccount
+  name: spark-serverless
+  namespace: default
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: wordcount-spark-driver-svc
+  namespace: default
+  annotations:
+    service.beta.kubernetes.io/alibaba-cloud-private-zone-enable: "true"
+spec:
+  clusterIP: None
+  ports:
+    - name: driver-rpc-port
+      port: 7078
+      protocol: TCP
+      targetPort: 7078
+    - name: blockmanager
+      port: 7079
+      protocol: TCP
+      targetPort: 7079
+  selector:
+    spark-app-selector: spark-9b7952456a86413b94c70fe2b3f8496c
+    spark-role: driver
+  sessionAffinity: None
+  type: ClusterIP
+
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  annotations:
+    spark-app-name: WordCount
+    k8s.aliyun.com/eci-image-cache: "true"
+  labels:
+    spark-app-selector: spark-9b7952456a86413b94c70fe2b3f8496c
+    spark-role: driver
+  name: wordcount-spark-driver
+  namespace: default
+spec:
+  containers:
+    - args:
+        - driver
+      env:
+        - name: SPARK_DRIVER_MEMORY
+          value: 1g
+        - name: SPARK_DRIVER_CLASS
+          value: com.aliyun.liumi.spark.example.WordCount
+        - name: SPARK_DRIVER_ARGS
+        - name: SPARK_DRIVER_BIND_ADDRESS
+          valueFrom:
+            fieldRef:
+              apiVersion: v1
+              fieldPath: status.podIP
+        - name: SPARK_MOUNTED_CLASSPATH
+          value: >-
+            /opt/spark/jars/SparkExampleJava-1.0-SNAPSHOT.jar:/opt/spark/jars/SparkExampleJava-1.0-SNAPSHOT.jar
+        - name: SPARK_JAVA_OPT_0
+          value: '-Dspark.submit.deployMode=cluster'
+        - name: SPARK_JAVA_OPT_1
+          value: '-Dspark.driver.blockManager.port=7079'
+        - name: SPARK_JAVA_OPT_2
+          value: '-Dspark.master=k8s://https://47.99.132.xxx:6443'
+        - name: SPARK_JAVA_OPT_3
+          value: '-Dspark.app.id=spark-9b7952456a86413b94c70fe2b3f8496c'
+        - name: SPARK_JAVA_OPT_4
+          value: '-Dspark.kubernetes.authenticate.driver.serviceAccountName=spark'
+        - name: SPARK_JAVA_OPT_5
+          value: >-
+            -Dspark.kubernetes.driver.pod.name=wordcount-spark-driver
+        - name: SPARK_JAVA_OPT_6
+          value: '-Dspark.app.name=WordCount'
+        - name: SPARK_JAVA_OPT_7
+          value: >-
+            -Dspark.kubernetes.container.image=registry.cn-beijing.aliyuncs.com/liumi/spark:2.3.0-hdfs-1.0
+        - name: SPARK_JAVA_OPT_8
+          value: '-Dspark.executor.instances=10'
+        - name: SPARK_JAVA_OPT_9
+          value: >-
+            -Dspark.jars=/opt/spark/jars/SparkExampleJava-1.0-SNAPSHOT.jar,/opt/spark/jars/SparkExampleJava-1.0-SNAPSHOT.jar
+        - name: SPARK_JAVA_OPT_10
+          value: >-
+            -Dspark.driver.host=wordcount-spark-driver-svc.default.svc.cluster.local.c132a4a4826814d579c14bf2c5cf933af
+        - name: SPARK_JAVA_OPT_11
+          value: >-
+            -Dspark.kubernetes.executor.podNamePrefix=wordcount-spark
+        - name: SPARK_JAVA_OPT_12
+          value: '-Dspark.driver.port=7078'
+        - name: SPARK_JAVA_OPT_13
+          value: >-
+            -Dspark.kubernetes.executor.annotation.k8s.aliyun.com/eci-image-cache=true
+        - name: SPARK_JAVA_OPT_14
+          value: >-
+            -Dspark.kubernetes.allocation.batch.size=10
+
+      image: 'registry.cn-beijing.aliyuncs.com/liumi/spark:2.3.0-hdfs-1.0'
+      imagePullPolicy: IfNotPresent
+      name: spark-kubernetes-driver
+      resources:
+        limits:
+          memory: 16384Mi
+        requests:
+          cpu: '8'
+          memory: 16Gi
+      terminationMessagePath: /dev/termination-log
+      terminationMessagePolicy: File
+
+  dnsPolicy: None
+  dnsConfig:
+    nameservers:
+      - 100.100.2.136
+      - 100.100.2.138
+    searches:
+      - default.svc.cluster.local.c132a4a4826814d579c14bf2c5cf933af
+      - svc.cluster.local.c132a4a4826814d579c14bf2c5cf933af
+      - cluster.local.c132a4a4826814d579c14bf2c5cf933af
+      - c132a4a4826814d579c14bf2c5cf933af
+    options:
+      - name: ndots
+        value: "5"
+  hostAliases:
+  - ip: "47.99.132.xxx"
+    hostnames:
+    - "kubernetes.default.svc"
+  priority: 0
+  restartPolicy: Never
+  serviceAccount: spark-serverless
+  serviceAccountName: spark-serverless
+  terminationGracePeriodSeconds: 30
+  tolerations:
+    - effect: NoExecute
+      key: node.kubernetes.io/not-ready
+      operator: Exists
+      tolerationSeconds: 300
+    - effect: NoExecute
+      key: node.kubernetes.io/unreachable
+      operator: Exists
+      tolerationSeconds: 300

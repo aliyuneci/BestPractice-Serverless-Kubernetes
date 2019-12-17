@@ -60,7 +60,7 @@ Hadoop在被业界广泛使用的同时，也一直存在很多的问题：
 
   
 
-###Hadoop to YARN
+### Hadoop to YARN
 
 早期的Hadoop大规模集群也可以达到几千个节点，当数据处理需求不断增长的时候，粗暴的增加节点已经让原生调度系统非常吃力。Application管理和Resource管理的逻辑全部放在Hadoop的 JobTracker中，而 JobTracker又不具备横向扩展的能力，这让JobTracker不负重堪。需要一套方案能将Application管理和Resource管理职责分开，能将计算模式和 JobTracker解耦，YARN就是在这样的背景下诞生的。如今我们常听到的Hadoop其实已经是指Yarn了。
 
@@ -261,7 +261,7 @@ ASK通过virtual kubelet调度pod到阿里云弹性容器实例。虽然架构�
 ### 创建serverless kubernetes集群
 
 选择标准serverless集群：
-![eci-spark-4](http://docs-aliyun.cn-hangzhou.oss.aliyun-inc.com/assets/pic/146238/cn_zh/1575978798395/1574233483142-9359d5e3-81c9-4154-8242-ed3a37a4e37b.png) 
+![eci-spark-4](https://github.com/aliyuneci/BestPractice-Serverless-Kubernetes/blob/master/eci-spark/pics/1574233483142-9359d5e3-81c9-4154-8242-ed3a37a4e37b.png) 
 
 基本参数：
 
