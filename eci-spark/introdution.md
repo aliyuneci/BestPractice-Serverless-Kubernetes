@@ -489,7 +489,7 @@ pod/wordcount-spark-driver created
 
 [Spark Operator](<https://github.com/GoogleCloudPlatform/spark-on-k8s-operator>) 就是为了解决在Kubernetes集群部署并维护Spark应用而开发的，Spark Operator是经典的CRD + Controller，即Kubernetes Operator的实现。Kubernetes Operator诞生的故事也很具有传奇色彩，有兴趣的同学可以了解下 。Operator的出现可以说给有状态的、特定领域的复杂应用 on Kubernetes 打开了一扇窗，Spark Operator便是其中具有代表性的一个。
 
-![eci-spark-6](http://docs-aliyun.cn-hangzhou.oss.aliyun-inc.com/assets/pic/146238/cn_zh/1575978916174/1574233531691-89664643-2afe-40fe-8ac0-462a8dba1910.png)
+![eci-spark-6](https://github.com/aliyuneci/BestPractice-Serverless-Kubernetes/blob/master/eci-spark/pics/1574233531691-89664643-2afe-40fe-8ac0-462a8dba1910.png)
 
 Spark Operator几个主要的概念：
 
@@ -613,7 +613,7 @@ startedAt: '2019-11-16T07:29:01Z'
 ### ACK + ECI
 
 在Spark中，Driver和Excutor之间的启动顺序是串行的。尽管ECI展现了出色的并发创建Executor pod的能力，但是ASK这种特殊架构会让Driver和Excutor之间的这种串行体现的比较明显，通常情况下在ECI启动一个Driver pod需要大约20s的时间，然后才是大规模的Excutor pod的启动。对于一些响应要求高的应用，Driver的启动速度可能比Excutor执行作业的耗时更重要。这个时候，我们可以采用ACK+ECI，即传统的Kubernetes集群 + virtual kubelet的方式：
-![eci-spark-9](http://docs-aliyun.cn-hangzhou.oss.aliyun-inc.com/assets/pic/146238/cn_zh/1575979138012/1574233670142-d818a7c8-2edf-4d4f-ac68-816d18eb1b55.png)
+![eci-spark-9](https://github.com/aliyuneci/BestPractice-Serverless-Kubernetes/blob/master/eci-spark/pics/1574233670142-d818a7c8-2edf-4d4f-ac68-816d18eb1b55.png)
 
 对于用户来说，只需如下简单的几步就可以将excutor调度到ECI的virtual node。
 
