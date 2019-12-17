@@ -34,7 +34,7 @@ Hadoop在被业界广泛使用的同时，也一直存在很多的问题：
 
 关于Hadoop的研究也基本是围绕资源调度、MapReduce计算模式、HDFS存储、以及通用性等方面的优化，Spark便是众多衍生系统中最成功的一个。甚至可以说是里程碑级别的，从此关于Hadoop的研究沉寂了很多。2009年由加州大学伯克利分校的AMPLab开发的Spark问世，便很快成为Apache的顶级开源项目。[Apache Spark](https://spark.apache.org/) 是一个基于内存计算、支持远比MapReduce复杂算子、涵盖批流等多种场景的大数据处理框架。
 
-![spark-2.png](https://yqfile.alicdn.com/0835473cc07a87223f25bafd85606b82cfc1b5d9.png)
+![spark-2.png](https://github.com/aliyuneci/BestPractice-Serverless-Kubernetes/blob/master/eci-spark/pics/spark-2.png)
 
 <center>Spark 模块关系图</center>
 
@@ -65,14 +65,14 @@ Hadoop在被业界广泛使用的同时，也一直存在很多的问题：
 早期的Hadoop大规模集群也可以达到几千个节点，当数据处理需求不断增长的时候，粗暴的增加节点已经让原生调度系统非常吃力。Application管理和Resource管理的逻辑全部放在Hadoop的 JobTracker中，而 JobTracker又不具备横向扩展的能力，这让JobTracker不负重堪。需要一套方案能将Application管理和Resource管理职责分开，能将计算模式和 JobTracker解耦，YARN就是在这样的背景下诞生的。如今我们常听到的Hadoop其实已经是指Yarn了。
 
 <div align="center">
-<img src="https://yqfile.alicdn.com/276e19e4edad1fd3099da1ebe60c4376060165db.png" width=800/>
+<img src="https://github.com/aliyuneci/BestPractice-Serverless-Kubernetes/blob/master/eci-spark/pics/spark-4.png" width=800/>
 </div>
 
 <center>Yarn 在集群的角色</center>
 
 
 
-![spark-3.png](https://yqfile.alicdn.com/03b441046a07f27650552649ddd794d326150b73.png)
+![spark-3.png](https://github.com/aliyuneci/BestPractice-Serverless-Kubernetes/blob/master/eci-spark/pics/spark-3.png)
 
 <center>Yarn 模块关系图</center>
 
