@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gitlab-runner
+spec:
+  selector:
+    matchLabels:
+      app: gitlab-runner
+  template:
+    metadata:
+      labels:
+        app: gitlab-runner
+      annotations:
+        k8s.aliyun.com/eci-image-cache: "true"	
+    spec:
+      containers:
+      - image: gitlab/gitlab-runner:latest
+        imagePullPolicy: IfNotPresent
+        name: gitlab-runner
+        volumeMounts:
+        - mountPath: /etc/gitlab-runner
+          name: config
+      volumes:
+      - name: config
+        projected:
+          defaultMode: 420
+          sources:
+          - secret:
+              items:
+              - key: ca.crt
+                path: ca.crt
+              - key: tls.crt
+                path: tls.crt
+              - key: tls.key
+                path: tls.key
+              name: gitlab-runner-secret
+          - configMap:
+              items:
+              - key: config.toml
+                path: config.toml
+              name: gitlab-runner-config

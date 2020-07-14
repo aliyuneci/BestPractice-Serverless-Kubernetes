@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: java-demo
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: java-demo
+  template:
+    metadata:
+      labels:
+        app: java-demo
+      annotations:
+        k8s.aliyun.com/eci-image-cache: "true"
+    spec:
+      containers:
+      - name: java-demo
+        image: registry.cn-hangzhou.aliyuncs.com/eci/java-demo:IMAGE_TAG
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8080
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: java-demo
+spec:
+  ports:
+  - port: 80
+    targetPort: 8080
+    name: java-demo
+  selector:
+    app: java-demo
+  type: LoadBalancer

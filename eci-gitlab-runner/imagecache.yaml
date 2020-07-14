@@ -1,0 +1,11 @@
+apiVersion: eci.alibabacloud.com/v1
+kind: ImageCache
+metadata:
+  name: gitlab-runner
+spec:
+  images:
+  - gitlab/gitlab-runner-helper:x86_64-latest
+  - gitlab/gitlab-runner:latest
+  - registry.cn-hangzhou.aliyuncs.com/eci/kaniko:1.0
+  - registry.cn-hangzhou.aliyuncs.com/eci/kubectl:1.0
+  - registry.cn-hangzhou.aliyuncs.com/eci/java-demo:1.0

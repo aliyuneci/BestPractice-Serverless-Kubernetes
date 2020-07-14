@@ -1,0 +1,36 @@
+cache:
+  paths:
+  - /cache
+stages:
+  - package
+  - build
+  - deploy
+mvn_package_job:
+  image: registry.cn-hangzhou.aliyuncs.com/eci/kaniko:1.0
+  stage: package
+  tags:
+    - test
+  script:
+    - mvn clean package -DskipTests
+    - cp -f target/demo.war /cache
+build_and_publish_docker_image_job:
+  image: registry.cn-hangzhou.aliyuncs.com/eci/kaniko:1.0
+  stage: build
+  tags:
+    - test
+  script:
+    - mkdir target
+    - cp /cache/demo.war target/demo.war
+    - echo $CI_PIPELINE_ID
+    - kaniko -f `pwd`/Dockerfile -c `pwd` --destination=registry.cn-hangzhou.aliyuncs.com/eci/java-demo:$CI_PIPELINE_ID
+deploy_k8s_job:
+  image: registry.cn-hangzhou.aliyuncs.com/eci/kubectl:1.0
+  stage: deploy   
+  tags:                      
+    - test
+  script:
+    - mkdir -p ~/.kube
+    - echo $kube_config |base64 -d > ~/.kube/config  
+    - sed -i "s/IMAGE_TAG/$CI_PIPELINE_ID/g" deployment.yaml
+    - cat deployment.yaml
+    - kubectl apply -f deployment.yaml
