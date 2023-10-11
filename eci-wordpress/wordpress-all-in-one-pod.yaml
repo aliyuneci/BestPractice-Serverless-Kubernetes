@@ -1,3 +1,29 @@
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: alicloud-disk
+provisioner: diskplugin.csi.alibabacloud.com
+parameters:
+  type: cloud_auto,cloud_essd,cloud_ssd # 使用该配置，按优先级自适应选择云盘类型，最终创建的云盘类型受节点实例、所在可用区云盘支持情况等因素影响。
+  fstype: ext4
+  volumeExpandAutoSnapshot: "forced" # 该设置仅在创建的云盘类型为cloud_essd时生效。
+volumeBindingMode: WaitForFirstConsumer
+reclaimPolicy: Delete
+allowVolumeExpansion: true
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: wordpress-pvc
+spec:
+  accessModes:
+    - ReadWriteOnce
+  volumeMode: Filesystem
+  resources:
+    requests:
+      storage: 20Gi
+  storageClassName: alicloud-disk
+---
 apiVersion: v1
 kind: Pod
 metadata:
@@ -6,35 +32,31 @@ metadata:
     "k8s.aliyun.com/eci-with-eip": "true" #自动挂载EIP
 spec:
   containers:
-  - image: mysql:5.6
-    name: mysql
-    env:
-    - name: MYSQL_ROOT_PASSWORD
-      value: "123456"
-    livenessProbe:
-      tcpSocket:
-        port: 3306
-    ports:
-    - containerPort: 3306
+    - image: mysql:5.6
       name: mysql
-  - image: wordpress:4.8-apache
-    name: wordpress
-    env:
-    - name: WORDPRESS_DB_HOST
-      value: 127.0.0.1
-    - name: WORDPRESS_DB_PASSWORD
-      value: "123456"
-    ports:
-    - containerPort: 80
+      env:
+        - name: MYSQL_ROOT_PASSWORD
+          value: "123456"
+      livenessProbe:
+        tcpSocket:
+          port: 3306
+      ports:
+        - containerPort: 3306
+          name: mysql
+    - image: wordpress:4.8-apache
       name: wordpress
-    volumeMounts:
+      env:
+        - name: WORDPRESS_DB_HOST
+          value: 127.0.0.1
+        - name: WORDPRESS_DB_PASSWORD
+          value: "123456"
+      ports:
+        - containerPort: 80
+          name: wordpress
+      volumeMounts:
+        - name: wordpress-persistent-storage
+          mountPath: /var/www/html
+  volumes:
     - name: wordpress-persistent-storage
-      mountPath: /var/www/html
-  volumes: #使用云盘作为文件存储，生命周期随pod实例周期释放
-  - name: wordpress-persistent-storage
-    flexVolume:
-      driver: "alicloud/disk"
-      fsType: "ext4"
-      options:
-        volumeType: "alicloud-disk-essd"
-        volumeSize: "20Gi"
+      persistentVolumeClaim:
+        claimName: wordpress-pvc
