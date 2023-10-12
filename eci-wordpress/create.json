@@ -1,6 +1,15 @@
 {
-  "cluster_type": "Ask",
-  "name": "wordpress-demo",
-  "nat_gateway": true,
-  "private_zone": true
+  "cluster_type":"ManagedKubernetes",
+  "profile":"Serverless",
+  "name":"wordpress-demo",
+  "region_id": "cn-hangzhou",
+  "endpoint_public_access": true,
+  "snat_entry":true,
+  "addons":[
+    {
+      "name": "csi-provisioner",
+      "config": ""
+    }
+  ],
+  "zoneid": "cn-hangzhou-j"
 }
